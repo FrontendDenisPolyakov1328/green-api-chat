@@ -10,8 +10,9 @@ export function getApiErrorMessage(error: unknown): string {
   if (axios.isAxiosError(error)) {
     if (!error.response) return "Нет соединения с сервером";
 
-    const { status, data } = error.response;
-    if (typeof data === "string" && data.trim()) return data;
+    const { status, data, headers } = error.response;
+    const isHtml = String(headers["content-type"] ?? "").includes("text/html");
+    if (typeof data === "string" && data.trim() && !isHtml) return data;
 
     const body = errorBodySchema.safeParse(data);
     return (
