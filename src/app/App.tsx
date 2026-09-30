@@ -17,8 +17,7 @@ export function App() {
 
   return (
     <Routes>
-      <Route path="/chat" element={<ChatPage />} />
-      <Route path="/chat/:chatId" element={<ChatPage />} />
+      <Route path="/chat/:chatId?" element={<ChatPage />} />
       <Route path="*" element={<Navigate replace to="/chat" />} />
     </Routes>
   );

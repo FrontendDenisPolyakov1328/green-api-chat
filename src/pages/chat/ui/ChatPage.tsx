@@ -1,10 +1,12 @@
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { useParams } from "react-router-dom";
+import { useNotificationsPolling } from "@/features/receiveMessages";
 import { ChatSidebar } from "@/widgets/chatSidebar";
 import { ChatWindow } from "@/widgets/chatWindow";
 
 export function ChatPage() {
+  useNotificationsPolling();
   const { chatId } = useParams();
   const isChatOpen = Boolean(chatId);
 
