@@ -29,15 +29,14 @@ export function MessageBubble({
     <Box
       sx={{
         alignSelf: isOutgoing ? "flex-end" : "flex-start",
-        mt: separated ? 1 : 0,
+        ...(separated && { mt: 1 }),
         display: "flow-root",
-        width: "fit-content",
         maxWidth: { xs: 350, md: 480 },
         px: 1.5,
         py: 1,
         borderRadius: 1.5,
         bgcolor: isOutgoing ? "primary.main" : "background.paper",
-        color: isOutgoing ? "primary.contrastText" : "text.primary",
+        ...(isOutgoing && { color: "primary.contrastText" }),
       }}
     >
       <Typography
@@ -48,7 +47,6 @@ export function MessageBubble({
         {message.text}
       </Typography>
       <Stack
-        component="span"
         direction="row"
         sx={{
           float: "right",
@@ -66,7 +64,7 @@ export function MessageBubble({
           <StatusIcon
             sx={{
               fontSize: 14,
-              color: message.status === "error" ? "error.light" : "inherit",
+              ...(message.status === "error" && { color: "error.light" }),
             }}
           />
         )}

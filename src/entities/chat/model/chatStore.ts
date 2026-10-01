@@ -43,20 +43,29 @@ const persistedChatsSchema = z.object({
   ),
 });
 
-function updateChatMessages(
+function moveChatToTop(chats: Chat[], chatId: string): Chat[] {
+  const chat = chats.find((item) => item.chatId === chatId);
+  if (!chat) return chats;
+  return [chat, ...chats.filter((item) => item.chatId !== chatId)];
+}
+
+function updateInstance(
   state: ChatState,
   idInstance: string,
   chatId: string,
-  update: (messages: Message[]) => Message[],
+  messages: Message[],
+  options?: { moveToTop?: boolean },
 ): Partial<ChatState> {
   const instance = state.byInstance[idInstance] ?? EMPTY_INSTANCE;
-  const messages = update(instance.messages[chatId] ?? []);
 
   return {
     byInstance: {
       ...state.byInstance,
       [idInstance]: {
         ...instance,
+        chats: options?.moveToTop
+          ? moveChatToTop(instance.chats, chatId)
+          : instance.chats,
         messages: { ...instance.messages, [chatId]: messages },
       },
     },
@@ -83,36 +92,30 @@ export const useChatStore = create<ChatState>()(
         }),
       addMessage: (idInstance, chatId, message) =>
         set((state) => {
-          const instance = state.byInstance[idInstance] ?? EMPTY_INSTANCE;
-          const current = instance.messages[chatId] ?? [];
+          const current = state.byInstance[idInstance]?.messages[chatId] ?? [];
           if (current.some((item) => item.id === message.id)) return state;
 
-          const chat = instance.chats.find((item) => item.chatId === chatId);
-
-          return {
-            byInstance: {
-              ...state.byInstance,
-              [idInstance]: {
-                ...instance,
-                chats: chat
-                  ? [chat, ...instance.chats.filter((item) => item.chatId !== chatId)]
-                  : instance.chats,
-                messages: {
-                  ...instance.messages,
-                  [chatId]: [...current, message].slice(-MAX_MESSAGES_PER_CHAT),
-                },
-              },
-            },
-          };
+          return updateInstance(
+            state,
+            idInstance,
+            chatId,
+            [...current, message].slice(-MAX_MESSAGES_PER_CHAT),
+            { moveToTop: true },
+          );
         }),
       updateMessage: (idInstance, chatId, messageId, patch) =>
-        set((state) =>
-          updateChatMessages(state, idInstance, chatId, (messages) =>
-            messages.map((item) =>
+        set((state) => {
+          const current = state.byInstance[idInstance]?.messages[chatId] ?? [];
+
+          return updateInstance(
+            state,
+            idInstance,
+            chatId,
+            current.map((item) =>
               item.id === messageId ? { ...item, ...patch } : item,
             ),
-          ),
-        ),
+          );
+        }),
     }),
     {
       name: "green-chat:chats",

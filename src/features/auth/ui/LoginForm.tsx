@@ -17,6 +17,26 @@ import {
 } from "../model/credentialsSchema";
 import { verifyCredentials } from "../model/verifyCredentials";
 
+function PasswordToggle({
+  visible,
+  onToggle,
+}: {
+  visible: boolean;
+  onToggle: () => void;
+}) {
+  return (
+    <InputAdornment position="end">
+      <IconButton
+        aria-label={visible ? "Скрыть пароль" : "Показать пароль"}
+        onClick={onToggle}
+        edge="end"
+      >
+        {visible ? <VisibilityOff /> : <Visibility />}
+      </IconButton>
+    </InputAdornment>
+  );
+}
+
 export function LoginForm() {
   const login = useSessionStore((state) => state.login);
   const [showPassword, setShowPassword] = useState(false);
@@ -44,9 +64,9 @@ export function LoginForm() {
       <TextField
         label="idInstance"
         autoComplete="username"
-        inputMode="numeric"
         error={Boolean(errors.idInstance)}
         helperText={errors.idInstance?.message ?? " "}
+        slotProps={{ htmlInput: { inputMode: "numeric" } }}
         {...register("idInstance")}
       />
 
@@ -60,15 +80,10 @@ export function LoginForm() {
         slotProps={{
           input: {
             endAdornment: (
-              <InputAdornment position="end">
-                <IconButton
-                  aria-label={showPassword ? "Скрыть пароль" : "Показать пароль"}
-                  onClick={() => setShowPassword((visible) => !visible)}
-                  edge="end"
-                >
-                  {showPassword ? <VisibilityOff /> : <Visibility />}
-                </IconButton>
-              </InputAdornment>
+              <PasswordToggle
+                visible={showPassword}
+                onToggle={() => setShowPassword((visible) => !visible)}
+              />
             ),
           },
         }}

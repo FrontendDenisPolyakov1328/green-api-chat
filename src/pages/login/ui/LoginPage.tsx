@@ -29,7 +29,7 @@ export function LoginPage() {
           Вход
         </Typography>
         <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-          Введите данные инстанса из личного кабинета GREEN-API
+          Введите данные Telegram-инстанса из личного кабинета GREEN-API
         </Typography>
         <LoginForm />
       </Paper>

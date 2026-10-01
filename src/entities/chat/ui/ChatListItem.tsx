@@ -15,6 +15,21 @@ type ChatListItemProps = {
   onClick: () => void;
 };
 
+function ChatListItemTitle({ phone, time }: { phone: string; time?: string }) {
+  return (
+    <Stack direction="row" sx={{ justifyContent: "space-between", gap: 1 }}>
+      <Typography component="span" noWrap sx={{ fontWeight: 600 }}>
+        +{phone}
+      </Typography>
+      {time && (
+        <Typography component="span" variant="caption" color="text.secondary">
+          {time}
+        </Typography>
+      )}
+    </Stack>
+  );
+}
+
 export function ChatListItem({
   chat,
   selected,
@@ -29,19 +44,9 @@ export function ChatListItem({
           <PersonIcon />
         </Avatar>
       </ListItemAvatar>
+
       <ListItemText
-        primary={
-          <Stack direction="row" sx={{ justifyContent: "space-between", gap: 1 }}>
-            <Typography component="span" noWrap sx={{ fontWeight: 600 }}>
-              +{chat.phone}
-            </Typography>
-            {time && (
-              <Typography component="span" variant="caption" color="text.secondary">
-                {time}
-              </Typography>
-            )}
-          </Stack>
-        }
+        primary={<ChatListItemTitle phone={chat.phone} time={time} />}
         secondary={preview}
         slotProps={{
           primary: { component: "div" },

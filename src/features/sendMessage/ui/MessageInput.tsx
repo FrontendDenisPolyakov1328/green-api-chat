@@ -2,7 +2,7 @@ import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import TextField from "@mui/material/TextField";
-import { useState, type FormEvent, type KeyboardEvent } from "react";
+import { useState, type KeyboardEvent, type SubmitEvent } from "react";
 import { useCredentials } from "@/entities/session";
 import { sendTextMessage } from "../model/sendTextMessage";
 
@@ -11,6 +11,20 @@ const MAX_MESSAGE_LENGTH = 4096;
 type MessageInputProps = {
   chatId: string;
 };
+
+function SendButton({ disabled }: { disabled: boolean }) {
+  return (
+    <IconButton
+      type="submit"
+      size="small"
+      disabled={disabled}
+      aria-label="Отправить"
+      sx={{ bgcolor: "primary.main", color: "primary.contrastText" }}
+    >
+      <ArrowUpwardIcon />
+    </IconButton>
+  );
+}
 
 export function MessageInput({ chatId }: MessageInputProps) {
   const credentials = useCredentials();
@@ -23,7 +37,7 @@ export function MessageInput({ chatId }: MessageInputProps) {
     void sendTextMessage(credentials, chatId, trimmed);
   };
 
-  const handleSubmit = (event: FormEvent) => {
+  const handleSubmit = (event: SubmitEvent<HTMLFormElement>) => {
     event.preventDefault();
     submit();
   };
@@ -53,17 +67,7 @@ export function MessageInput({ chatId }: MessageInputProps) {
         slotProps={{
           htmlInput: { maxLength: MAX_MESSAGE_LENGTH },
           input: {
-            endAdornment: (
-              <IconButton
-                type="submit"
-                size="small"
-                disabled={!trimmed}
-                aria-label="Отправить"
-                sx={{ bgcolor: "primary.main", color: "primary.contrastText" }}
-              >
-                <ArrowUpwardIcon />
-              </IconButton>
-            ),
+            endAdornment: <SendButton disabled={!trimmed} />,
             sx: {
               alignItems: "center",
               py: 1,
