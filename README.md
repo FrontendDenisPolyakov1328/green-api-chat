@@ -1,5 +1,7 @@
 # green-api-chat
 
+Ссылка на чат: https://green-api-chat-ashen.vercel.app
+
 Чат для Telegram-инстанса [GREEN-API](https://green-api.com/telegram/docs/). Вход по `idInstance` и `apiTokenInstance`, новый чат по номеру телефона, текстовые сообщения в обе стороны.
 
 Номер при создании чата проверяется через `checkAccount`. Исходящие сообщения уходят через `sendMessage`. Входящие забираются циклом `receiveNotification` -> обработка -> `deleteNotification`. В списке только чаты, созданные в этом приложении. Из входящих сохраняются `textMessage` и `extendedTextMessage`.
