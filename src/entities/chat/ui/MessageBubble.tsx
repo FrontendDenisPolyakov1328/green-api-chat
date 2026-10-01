@@ -15,9 +15,13 @@ const STATUS_ICONS: Record<MessageStatus, typeof DoneIcon> = {
 
 type MessageBubbleProps = {
   message: Message;
+  separated?: boolean;
 };
 
-export function MessageBubble({ message }: MessageBubbleProps) {
+export function MessageBubble({
+  message,
+  separated = false,
+}: MessageBubbleProps) {
   const isOutgoing = message.direction === "outgoing";
   const StatusIcon = STATUS_ICONS[message.status];
 
@@ -25,32 +29,39 @@ export function MessageBubble({ message }: MessageBubbleProps) {
     <Box
       sx={{
         alignSelf: isOutgoing ? "flex-end" : "flex-start",
-        maxWidth: { xs: "85%", sm: "70%" },
+        mt: separated ? 1 : 0,
+        display: "flow-root",
+        width: "fit-content",
+        maxWidth: { xs: 350, md: 480 },
         px: 1.5,
         py: 1,
-        borderRadius: 2,
+        borderRadius: 1.5,
         bgcolor: isOutgoing ? "primary.main" : "background.paper",
         color: isOutgoing ? "primary.contrastText" : "text.primary",
-        boxShadow: isOutgoing ? "none" : 1,
       }}
     >
       <Typography
+        component="span"
         variant="body2"
         sx={{ whiteSpace: "pre-wrap", overflowWrap: "anywhere" }}
       >
         {message.text}
       </Typography>
       <Stack
+        component="span"
         direction="row"
         sx={{
-          justifyContent: "flex-end",
+          float: "right",
           alignItems: "center",
-          gap: 0.5,
-          mt: 0.25,
+          gap: 0.25,
+          ml: 1,
           opacity: 0.7,
+          transform: "translateY(8px)",
         }}
       >
-        <Typography variant="caption">{formatTime(message.timestamp)}</Typography>
+        <Typography variant="caption">
+          {formatTime(message.timestamp)}
+        </Typography>
         {isOutgoing && (
           <StatusIcon
             sx={{

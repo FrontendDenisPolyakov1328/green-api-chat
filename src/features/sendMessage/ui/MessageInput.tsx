@@ -1,6 +1,6 @@
-import SendIcon from "@mui/icons-material/Send";
+import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
-import Stack from "@mui/material/Stack";
 import TextField from "@mui/material/TextField";
 import { useState, type FormEvent, type KeyboardEvent } from "react";
 import { useCredentials } from "@/entities/session";
@@ -29,19 +29,18 @@ export function MessageInput({ chatId }: MessageInputProps) {
   };
 
   const handleKeyDown = (event: KeyboardEvent) => {
-    if (event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing) {
+    if (
+      event.key === "Enter" &&
+      !event.shiftKey &&
+      !event.nativeEvent.isComposing
+    ) {
       event.preventDefault();
       submit();
     }
   };
 
   return (
-    <Stack
-      component="form"
-      direction="row"
-      onSubmit={handleSubmit}
-      sx={{ alignItems: "flex-end", gap: 1, p: 1.5, bgcolor: "background.paper" }}
-    >
+    <Box component="form" onSubmit={handleSubmit} sx={{ px: 2, pb: 2 }}>
       <TextField
         value={text}
         onChange={(event) => setText(event.target.value)}
@@ -51,16 +50,30 @@ export function MessageInput({ chatId }: MessageInputProps) {
         maxRows={5}
         fullWidth
         size="small"
-        slotProps={{ htmlInput: { maxLength: MAX_MESSAGE_LENGTH } }}
+        slotProps={{
+          htmlInput: { maxLength: MAX_MESSAGE_LENGTH },
+          input: {
+            endAdornment: (
+              <IconButton
+                type="submit"
+                size="small"
+                disabled={!trimmed}
+                aria-label="Отправить"
+                sx={{ bgcolor: "primary.main", color: "primary.contrastText" }}
+              >
+                <ArrowUpwardIcon />
+              </IconButton>
+            ),
+            sx: {
+              alignItems: "center",
+              py: 1,
+              pr: 1,
+              borderRadius: 1.5,
+              bgcolor: "background.paper",
+            },
+          },
+        }}
       />
-      <IconButton
-        type="submit"
-        color="primary"
-        disabled={!trimmed}
-        aria-label="Отправить"
-      >
-        <SendIcon />
-      </IconButton>
-    </Stack>
+    </Box>
   );
 }

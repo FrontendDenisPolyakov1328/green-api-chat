@@ -9,12 +9,22 @@ export function LoginPage() {
       sx={{
         minHeight: "100%",
         display: "flex",
-        alignItems: "center",
+        alignItems: { xs: "stretch", sm: "center" },
         justifyContent: "center",
-        p: 2,
+        p: { xs: 0, sm: 2 },
       }}
     >
-      <Paper sx={{ width: "100%", maxWidth: 400, p: { xs: 3, sm: 4 } }}>
+      <Paper
+        elevation={0}
+        sx={{
+          width: "100%",
+          maxWidth: { sm: 400 },
+          minHeight: { xs: "100%", sm: "auto" },
+          p: { xs: 3, sm: 4 },
+          pt: { xs: "12vh", sm: 4 },
+          borderRadius: { xs: 0, sm: 1 },
+        }}
+      >
         <Typography component="h1" variant="h5" gutterBottom>
           Вход
         </Typography>

@@ -7,7 +7,13 @@ import Stack from "@mui/material/Stack";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import { useNavigate, useParams } from "react-router-dom";
-import { ChatListItem, formatTime, useChats, useMessages, type Chat } from "@/entities/chat";
+import {
+  ChatListItem,
+  formatTime,
+  useChats,
+  useMessages,
+  type Chat,
+} from "@/entities/chat";
 import { useCredentials, useSessionStore } from "@/entities/session";
 import { CreateChatButton } from "@/features/createChat";
 
@@ -26,7 +32,7 @@ function ChatRow({ idInstance, chat, selected, onOpen }: ChatRowProps) {
     <ChatListItem
       chat={chat}
       selected={selected}
-      preview={lastMessage?.text}
+      preview={lastMessage?.text ?? "Нет сообщений"}
       time={lastMessage ? formatTime(lastMessage.timestamp) : undefined}
       onClick={() => onOpen(chat.chatId)}
     />
@@ -52,33 +58,39 @@ export function ChatSidebar() {
           Чаты
         </Typography>
         <CreateChatButton onCreated={openChat} />
-        <Tooltip title="Выйти">
-          <IconButton onClick={logout}>
-            <LogoutIcon />
-          </IconButton>
-        </Tooltip>
       </Stack>
       <Divider />
 
-      {chats.length === 0 ? (
-        <Box sx={{ p: 3, textAlign: "center" }}>
-          <Typography variant="body2" color="text.secondary">
-            Чатов пока нет. Нажмите на карандаш, чтобы начать новый
-          </Typography>
-        </Box>
-      ) : (
-        <List sx={{ flexGrow: 1, overflowY: "auto", py: 0 }}>
-          {chats.map((chat) => (
-            <ChatRow
-              key={chat.chatId}
-              idInstance={idInstance}
-              chat={chat}
-              selected={chat.chatId === chatId}
-              onOpen={openChat}
-            />
-          ))}
-        </List>
-      )}
+      <Box sx={{ flexGrow: 1, overflowY: "auto", minHeight: 0 }}>
+        {chats.length === 0 ? (
+          <Box sx={{ p: 3, textAlign: "center" }}>
+            <Typography variant="body2" color="text.secondary">
+              Чатов пока нет. Нажмите на карандаш, чтобы начать новый
+            </Typography>
+          </Box>
+        ) : (
+          <List sx={{ py: 0 }}>
+            {chats.map((chat) => (
+              <ChatRow
+                key={chat.chatId}
+                idInstance={idInstance}
+                chat={chat}
+                selected={chat.chatId === chatId}
+                onOpen={openChat}
+              />
+            ))}
+          </List>
+        )}
+      </Box>
+
+      <Divider />
+      <Box sx={{ px: 1, py: 0.5 }}>
+        <Tooltip title="Выйти">
+          <IconButton aria-label="Выйти" onClick={logout}>
+            <LogoutIcon />
+          </IconButton>
+        </Tooltip>
+      </Box>
     </Stack>
   );
 }

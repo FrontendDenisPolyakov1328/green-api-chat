@@ -21,10 +21,12 @@ export function ChatWindow({ chatId }: ChatWindowProps) {
   const chat = useChat(idInstance, chatId);
   const messages = useMessages(idInstance, chatId);
   const navigate = useNavigate();
-  const bottomRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ block: "end" });
+    const list = listRef.current;
+    if (!list) return;
+    list.scrollTop = list.scrollHeight;
   }, [messages.length]);
 
   if (!chat) {
@@ -43,7 +45,7 @@ export function ChatWindow({ chatId }: ChatWindowProps) {
           alignItems: "center",
           gap: 1.5,
           px: 2,
-          py: 1,
+          py: 1.5,
           bgcolor: "background.paper",
         }}
       >
@@ -51,7 +53,6 @@ export function ChatWindow({ chatId }: ChatWindowProps) {
           edge="start"
           aria-label="Назад к чатам"
           onClick={() => navigate("/chat")}
-          sx={{ display: { md: "none" } }}
         >
           <ArrowBackIcon />
         </IconButton>
@@ -64,26 +65,50 @@ export function ChatWindow({ chatId }: ChatWindowProps) {
       </Stack>
       <Divider />
 
-      <Stack
-        sx={{ flexGrow: 1, overflowY: "auto", gap: 1, p: 2 }}
+      <Box
+        ref={listRef}
+        sx={{
+          flexGrow: 1,
+          minHeight: 0,
+          overflowY: "auto",
+          scrollbarGutter: "stable both-edges",
+          scrollbarColor: "rgba(0, 0, 0, 0.3) transparent",
+        }}
       >
-        {messages.length === 0 && (
-          <Typography
-            variant="body2"
-            color="text.secondary"
-            sx={{ m: "auto" }}
-          >
-            Сообщений пока нет. Напишите первым
-          </Typography>
-        )}
-        {messages.map((message) => (
-          <MessageBubble key={message.id} message={message} />
-        ))}
-        <div ref={bottomRef} />
-      </Stack>
+        <Stack
+          sx={{
+            width: "100%",
+            maxWidth: 700,
+            mx: "auto",
+            minHeight: "100%",
+            gap: 0.5,
+            p: { xs: 1, md: 2 },
+          }}
+        >
+          {messages.length === 0 && (
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{ m: "auto" }}
+            >
+              Сообщений пока нет. Напишите первым
+            </Typography>
+          )}
+          {messages.map((message, index) => (
+            <MessageBubble
+              key={message.id}
+              message={message}
+              separated={
+                index > 0 && messages[index - 1].direction !== message.direction
+              }
+            />
+          ))}
+        </Stack>
+      </Box>
 
-      <Divider />
-      <MessageInput chatId={chatId} />
+      <Stack sx={{ width: "100%", maxWidth: 725, mx: "auto" }}>
+        <MessageInput chatId={chatId} />
+      </Stack>
     </Stack>
   );
 }

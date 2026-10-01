@@ -3,7 +3,7 @@ import { createTheme, responsiveFontSizes } from "@mui/material/styles";
 const baseTheme = createTheme({
   palette: {
     primary: { main: "#007AFF" },
-    background: { default: "#F5F6F8", paper: "#FFFFFF" },
+    background: { default: "#EEF0F3", paper: "#FFFFFF" },
   },
   shape: { borderRadius: 12 },
   typography: {
@@ -14,6 +14,16 @@ const baseTheme = createTheme({
   components: {
     MuiButton: {
       defaultProps: { disableElevation: true },
+    },
+    MuiOutlinedInput: {
+      styleOverrides: {
+        root: ({ theme }) => ({
+          "&:hover:not(.Mui-focused):not(.Mui-error) .MuiOutlinedInput-notchedOutline":
+            {
+              borderColor: theme.alpha(theme.palette.common.black, 0.23),
+            },
+        }),
+      },
     },
   },
 });

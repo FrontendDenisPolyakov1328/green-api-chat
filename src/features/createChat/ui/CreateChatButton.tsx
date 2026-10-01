@@ -54,7 +54,8 @@ export function CreateChatButton({ onCreated }: CreateChatButtonProps) {
     );
 
     try {
-      const chatId = existing?.chatId ?? (await checkAccount(credentials, phone));
+      const chatId =
+        existing?.chatId ?? (await checkAccount(credentials, phone));
       addChat(credentials.idInstance, { chatId, phone });
       handleClose();
       onCreated(chatId);
@@ -66,7 +67,13 @@ export function CreateChatButton({ onCreated }: CreateChatButtonProps) {
   return (
     <>
       <Tooltip title="Новый чат">
-        <IconButton color="primary" onClick={() => setOpen(true)}>
+        <IconButton
+          color="primary"
+          onClick={(event) => {
+            event.currentTarget.blur();
+            setOpen(true);
+          }}
+        >
           <EditSquareIcon />
         </IconButton>
       </Tooltip>
@@ -74,7 +81,7 @@ export function CreateChatButton({ onCreated }: CreateChatButtonProps) {
       <Dialog open={open} onClose={handleClose} fullWidth maxWidth="xs">
         <form noValidate onSubmit={handleSubmit(onSubmit)}>
           <DialogTitle>Новый чат</DialogTitle>
-          <DialogContent>
+          <DialogContent sx={{ pb: 0 }}>
             <Stack spacing={2} sx={{ pt: 1 }}>
               {errors.root && (
                 <Alert severity="error">{errors.root.message}</Alert>
@@ -85,7 +92,7 @@ export function CreateChatButton({ onCreated }: CreateChatButtonProps) {
                 type="tel"
                 autoFocus
                 error={Boolean(errors.phone)}
-                helperText={errors.phone?.message}
+                helperText={errors.phone?.message ?? " "}
                 {...register("phone")}
               />
             </Stack>
