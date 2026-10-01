@@ -81,6 +81,7 @@ export function ChatWindow({ chatId }: ChatWindowProps) {
             maxWidth: 700,
             mx: "auto",
             minHeight: "100%",
+            justifyContent: "flex-end",
             gap: 0.5,
             p: { xs: 1, md: 2 },
           }}
