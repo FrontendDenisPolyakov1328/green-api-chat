@@ -7,7 +7,13 @@ export function useNotificationsPolling() {
 
   useEffect(() => {
     const controller = new AbortController();
-    void pollNotifications(credentials, controller.signal);
-    return () => controller.abort();
+    const timer = setTimeout(() => {
+      void pollNotifications(credentials, controller.signal);
+    }, 0);
+
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    };
   }, [credentials]);
 }

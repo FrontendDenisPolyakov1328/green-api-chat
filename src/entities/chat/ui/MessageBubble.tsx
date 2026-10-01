@@ -4,6 +4,7 @@ import ScheduleIcon from "@mui/icons-material/Schedule";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
+import { formatTime } from "../lib/formatTime";
 import type { Message, MessageStatus } from "../model/types";
 
 const STATUS_ICONS: Record<MessageStatus, typeof DoneIcon> = {
@@ -11,13 +12,6 @@ const STATUS_ICONS: Record<MessageStatus, typeof DoneIcon> = {
   sent: DoneIcon,
   error: ErrorOutlineIcon,
 };
-
-function formatTime(timestamp: number): string {
-  return new Date(timestamp).toLocaleTimeString([], {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
 
 type MessageBubbleProps = {
   message: Message;

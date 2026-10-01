@@ -7,10 +7,6 @@ import { saveIncomingMessage } from "./saveIncomingMessage";
 
 const RETRY_DELAY_MS = 5_000;
 
-function isEmptyPoll(error: unknown): boolean {
-  return axios.isAxiosError(error) && error.response?.status === 408;
-}
-
 function wait(signal: AbortSignal): Promise<void> {
   return new Promise((resolve) => {
     const timer = setTimeout(resolve, RETRY_DELAY_MS);
@@ -43,7 +39,6 @@ export async function pollNotifications(
       await deleteNotification(credentials, notification.receiptId, signal);
     } catch (error) {
       if (signal.aborted || axios.isCancel(error)) return;
-      if (isEmptyPoll(error)) continue;
 
       const message = getApiErrorMessage(error);
       if (message !== lastError) {

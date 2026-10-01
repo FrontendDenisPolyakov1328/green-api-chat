@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { useEffect, useState } from "react";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { Chat, Message } from "./types";
@@ -81,13 +82,29 @@ export const useChatStore = create<ChatState>()(
           };
         }),
       addMessage: (idInstance, chatId, message) =>
-        set((state) =>
-          updateChatMessages(state, idInstance, chatId, (messages) =>
-            messages.some((item) => item.id === message.id)
-              ? messages
-              : [...messages, message].slice(-MAX_MESSAGES_PER_CHAT),
-          ),
-        ),
+        set((state) => {
+          const instance = state.byInstance[idInstance] ?? EMPTY_INSTANCE;
+          const current = instance.messages[chatId] ?? [];
+          if (current.some((item) => item.id === message.id)) return state;
+
+          const chat = instance.chats.find((item) => item.chatId === chatId);
+
+          return {
+            byInstance: {
+              ...state.byInstance,
+              [idInstance]: {
+                ...instance,
+                chats: chat
+                  ? [chat, ...instance.chats.filter((item) => item.chatId !== chatId)]
+                  : instance.chats,
+                messages: {
+                  ...instance.messages,
+                  [chatId]: [...current, message].slice(-MAX_MESSAGES_PER_CHAT),
+                },
+              },
+            },
+          };
+        }),
       updateMessage: (idInstance, chatId, messageId, patch) =>
         set((state) =>
           updateChatMessages(state, idInstance, chatId, (messages) =>
@@ -128,4 +145,17 @@ export function useMessages(idInstance: string, chatId: string): Message[] {
   return useChatStore(
     (state) => state.byInstance[idInstance]?.messages[chatId] ?? EMPTY_MESSAGES,
   );
+}
+
+export function useChatStoreHydrated(): boolean {
+  const [hydrated, setHydrated] = useState(() =>
+    useChatStore.persist.hasHydrated(),
+  );
+
+  useEffect(
+    () => useChatStore.persist.onFinishHydration(() => setHydrated(true)),
+    [],
+  );
+
+  return hydrated;
 }

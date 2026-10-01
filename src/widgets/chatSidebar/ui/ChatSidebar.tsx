@@ -7,9 +7,31 @@ import Stack from "@mui/material/Stack";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import { useNavigate, useParams } from "react-router-dom";
-import { ChatListItem, useChats } from "@/entities/chat";
+import { ChatListItem, formatTime, useChats, useMessages, type Chat } from "@/entities/chat";
 import { useCredentials, useSessionStore } from "@/entities/session";
 import { CreateChatButton } from "@/features/createChat";
+
+type ChatRowProps = {
+  idInstance: string;
+  chat: Chat;
+  selected: boolean;
+  onOpen: (chatId: string) => void;
+};
+
+function ChatRow({ idInstance, chat, selected, onOpen }: ChatRowProps) {
+  const messages = useMessages(idInstance, chat.chatId);
+  const lastMessage = messages.at(-1);
+
+  return (
+    <ChatListItem
+      chat={chat}
+      selected={selected}
+      preview={lastMessage?.text}
+      time={lastMessage ? formatTime(lastMessage.timestamp) : undefined}
+      onClick={() => onOpen(chat.chatId)}
+    />
+  );
+}
 
 export function ChatSidebar() {
   const { idInstance } = useCredentials();
@@ -47,11 +69,12 @@ export function ChatSidebar() {
       ) : (
         <List sx={{ flexGrow: 1, overflowY: "auto", py: 0 }}>
           {chats.map((chat) => (
-            <ChatListItem
+            <ChatRow
               key={chat.chatId}
+              idInstance={idInstance}
               chat={chat}
               selected={chat.chatId === chatId}
-              onClick={() => openChat(chat.chatId)}
+              onOpen={openChat}
             />
           ))}
         </List>

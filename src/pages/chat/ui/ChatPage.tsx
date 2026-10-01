@@ -1,6 +1,9 @@
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import { useParams } from "react-router-dom";
+import { useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { useChat, useChatStoreHydrated } from "@/entities/chat";
+import { useCredentials } from "@/entities/session";
 import { useNotificationsPolling } from "@/features/receiveMessages";
 import { ChatSidebar } from "@/widgets/chatSidebar";
 import { ChatWindow } from "@/widgets/chatWindow";
@@ -8,7 +11,15 @@ import { ChatWindow } from "@/widgets/chatWindow";
 export function ChatPage() {
   useNotificationsPolling();
   const { chatId } = useParams();
+  const { idInstance } = useCredentials();
+  const hydrated = useChatStoreHydrated();
+  const chat = useChat(idInstance, chatId ?? "");
+  const navigate = useNavigate();
   const isChatOpen = Boolean(chatId);
+
+  useEffect(() => {
+    if (hydrated && chatId && !chat) navigate("/chat", { replace: true });
+  }, [hydrated, chatId, chat, navigate]);
 
   return (
     <Box sx={{ height: "100%", display: "flex" }}>
@@ -31,12 +42,14 @@ export function ChatPage() {
           display: { xs: isChatOpen ? "flex" : "none", md: "flex" },
         }}
       >
-        {chatId ? (
-          <ChatWindow key={chatId} chatId={chatId} />
+        {chat ? (
+          <ChatWindow key={chat.chatId} chatId={chat.chatId} />
         ) : (
-          <Typography color="text.secondary" sx={{ m: "auto" }}>
-            Выберите чат или создайте новый
-          </Typography>
+          !chatId && (
+            <Typography color="text.secondary" sx={{ m: "auto" }}>
+              Выберите чат или создайте новый
+            </Typography>
+          )
         )}
       </Box>
     </Box>
